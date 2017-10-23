@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+
+pd.set_option('display.max_rows', 500)
+
+climo = r'/Users/mosesheavy/Desktop/cfsr_201410-201503.csv' # read in .csv file
+climo_df = pd.read_csv(climo, dtype= object, skiprows=0, 
+                       names= ['Case #', 'Date', 'Longitude', 'Latitude', 'Pressure(hPa)']) #Add Headers
+
+climo_df['Longitude'] = climo_df['Longitude'].map(lambda x: x.rstrip('EW'))
+
+climo_df['Longitude'] = climo_df['Longitude'].map(lambda x: float(x) * -1) 
+# longitude column is in western hemisphere and make all longitude column entries float integers
+
+climo_df['Latitude'] = climo_df['Latitude'].map(lambda x: x.rstrip('NS'))
+
+climo_df['Latitude'] = climo_df['Latitude'].map(lambda x: float(x)) 
+# convert all latitude column entries float integers
+
+climo_df['Pressure(hPa)'] = climo_df['Pressure(hPa)'].map(lambda x: x.rstrip('hPa')) 
+# remove hPa string from pressure column 
+
+climo_df['Pressure(hPa)'] = climo_df['Pressure(hPa)'].map(lambda x: float(x)) 
+# convert all pressure column entries into float integers
+
+climo_df['Date'] = climo_df['Date'].map(lambda x: x.rstrip(''))
+
+e = climo_df['Date'].astype(str) # change all entries in col 'Date' to type = string
+e = e.str[:4] + e.str[5:7] + e.str[8:10] + e.str[-2:] # return only numbers in string
+climo_df['Date'] = pd.to_datetime(e, format = '%Y%m%d%H') # convert to numerical date string to datetime format
+
+climo_df = climo_df[(climo_df.Longitude >= -78.0) & (climo_df.Longitude <= -73.0) & 
+                            (climo_df.Latitude >= 38.0) & (climo_df.Latitude <= 41.0)]
+
+climo_df_By_Case = climo_df.groupby(['Case #', 'Date'], sort= False).mean()
+
+climo_df_By_Case
