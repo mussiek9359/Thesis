@@ -9,6 +9,7 @@ obs_df = pd.read_csv(obs, header= None, names= ['WBAN','Date', 'Extinc Coeff', '
                                                 'Spd 2min av wind(kts)', 'Dir max 5min av wind',
                                                 'Spd_max_5min_av_wind(kts)'], index_col=False, 
                      na_filter=False)
+
 ## 'names' can change based on errors that arise from lack of columns -- adding blank names columns (Ex: ''), running that code separately 
 ## then adjusting names as necessary can solve this 
 
