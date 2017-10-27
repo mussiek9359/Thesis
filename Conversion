@@ -1,0 +1,20 @@
+""" Write a script that reads in a .dat file """
+
+import csv
+import os
+
+
+with open("ENTER_FILE_PATH_HERE", 'r') as input_file:
+    lines = input_file.readlines()
+    newlines = []
+    for line in lines:
+        newLine = line.split()
+        newlines.append(newLine)
+
+
+""" Write a script that writes out the .dat file as .csv """
+
+with open("ENTER_OUTPUT_FILE_PATH_HERE", 'w') as output_file:
+    file_writer = csv.writer(output_file)
+    file_writer.writerows(newlines)
+    
