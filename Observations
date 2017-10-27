@@ -3,102 +3,39 @@ import numpy as np
 
 pd.set_option('display.max_rows', 5000)
 
-obs = r'/Users/mosesheavy/Desktop/ASOS_data/64050KACK201410.csv' # read in obs csv file
+obs = r'ENTER_FILE_PATH_HERE' # read in observational csv file
 
-obs_df = pd.read_csv(obs, names= ['WBAN','Date','Extinc Coeff', 'D/N', 'Dir 2min av wind', 
-                                  'Spd 2min av wind(kts)', 'Dir max 5min av wind','Spd_max_5min_av_wind(kts)', 
-                                  'Constant','Runway vis range'], usecols= ['WBAN', 'Date', 
-                                                                            'Spd_max_5min_av_wind(kts)'], 
+obs_df = pd.read_csv(obs, header= None, names= ['WBAN','Date', 'Extinc Coeff', 'D/N', 'Dir 2min av wind', 
+                                                'Spd 2min av wind(kts)', 'Dir max 5min av wind',
+                                                'Spd_max_5min_av_wind(kts)'], index_col=False, 
                      na_filter=False)
+## 'names' can change based on errors that arise from lack of columns -- adding blank names columns (Ex: ''), running that code separately 
+## then adjusting names as necessary can solve this 
 
-obs_df['Date'] = obs_df['Date'].map(lambda x: x.lstrip('ACK'))
+keep_cols = ['WBAN', 'Date', 'Spd_max_5min_av_wind(kts)']
+obs_df = obs_df[keep_cols]
 
-obs_df['WBAN'] = obs_df['WBAN'].map(lambda x: x.lstrip('14756'))
+obs_df['Date'] = obs_df['Date'].map(lambda x: x.lstrip('ABCDEFGHIJKLMNOPQRSTUVWXYZ'))
 
-obs_df['Spd_max_5min_av_wind(kts)'][33761] == '15'
+obs_df['WBAN'] = obs_df['WBAN'].map(lambda x: x.lstrip('1234567890'))
 
 import pytz
 
 a = str(obs_df.loc[0, 'Date'])
 offset = (int(a[12:14]) - int(a[8:10])) * 60
-print(offset)
+# print(offset)
 
-obs_df['Date'] = pd.to_datetime(obs_df['Date'].astype(str).str[:-4], format = '%Y%m%d%H%M')
-print (obs_df)
-
+obs_df['Date'] = pd.to_datetime(obs_df['Date'].astype(str).str[:12], format = '%Y%m%d%H%M')
 obs_df['Date'] = obs_df['Date'].dt.tz_localize('UTC').dt.tz_convert(pytz.FixedOffset(offset))
-print (obs_df)
 
-obs_df
+## convert 'Date' column to datetime format
 
-obs_df_time = obs_df[(obs_df.Date == '2014-10-01 00:00:00+05:00') | (obs_df.Date == '2014-10-01 06:00:00+05:00') |
-       (obs_df.Date == '2014-10-01 12:00:00+05:00') | (obs_df.Date == '2014-10-01 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-02 00:00:00+05:00') | (obs_df.Date == '2014-10-02 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-02 12:00:00+05:00') | (obs_df.Date == '2014-10-02 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-03 00:00:00+05:00') | (obs_df.Date == '2014-10-03 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-03 12:00:00+05:00') | (obs_df.Date == '2014-10-03 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-04 00:00:00+05:00') | (obs_df.Date == '2014-10-04 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-04 12:00:00+05:00') | (obs_df.Date == '2014-10-04 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-05 00:00:00+05:00') | (obs_df.Date == '2014-10-05 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-05 12:00:00+05:00') | (obs_df.Date == '2014-10-05 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-06 00:00:00+05:00') | (obs_df.Date == '2014-10-06 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-06 12:00:00+05:00') | (obs_df.Date == '2014-10-06 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-07 00:00:00+05:00') | (obs_df.Date == '2014-10-07 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-07 12:00:00+05:00') | (obs_df.Date == '2014-10-07 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-08 00:00:00+05:00') | (obs_df.Date == '2014-10-08 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-08 12:00:00+05:00') | (obs_df.Date == '2014-10-08 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-09 00:00:00+05:00') | (obs_df.Date == '2014-10-09 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-09 12:00:00+05:00') | (obs_df.Date == '2014-10-09 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-10 00:00:00+05:00') | (obs_df.Date == '2014-10-10 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-10 12:00:00+05:00') | (obs_df.Date == '2014-10-10 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-11 00:00:00+05:00') | (obs_df.Date == '2014-10-11 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-11 12:00:00+05:00') | (obs_df.Date == '2014-10-11 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-12 00:00:00+05:00') | (obs_df.Date == '2014-10-12 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-12 12:00:00+05:00') | (obs_df.Date == '2014-10-12 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-13 00:00:00+05:00') | (obs_df.Date == '2014-10-13 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-13 12:00:00+05:00') | (obs_df.Date == '2014-10-13 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-14 00:00:00+05:00') | (obs_df.Date == '2014-10-14 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-14 12:00:00+05:00') | (obs_df.Date == '2014-10-14 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-15 00:00:00+05:00') | (obs_df.Date == '2014-10-15 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-15 12:00:00+05:00') | (obs_df.Date == '2014-10-15 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-16 00:00:00+05:00') | (obs_df.Date == '2014-10-16 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-16 12:00:00+05:00') | (obs_df.Date == '2014-10-16 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-17 00:00:00+05:00') | (obs_df.Date == '2014-10-17 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-17 12:00:00+05:00') | (obs_df.Date == '2014-10-17 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-18 00:00:00+05:00') | (obs_df.Date == '2014-10-18 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-18 12:00:00+05:00') | (obs_df.Date == '2014-10-18 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-19 00:00:00+05:00') | (obs_df.Date == '2014-10-19 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-19 12:00:00+05:00') | (obs_df.Date == '2014-10-19 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-20 00:00:00+05:00') | (obs_df.Date == '2014-10-20 06:00:00+05:00') | 
-       (obs_df.Date == '2014-10-20 12:00:00+05:00') | (obs_df.Date == '2014-10-20 18:00:00+05:00') | 
-       (obs_df.Date == '2014-10-21 00:00:00+05:00') | (obs_df.Date == '2014-10-21 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-21 18:00:00+05:00') | (obs_df.Date == '2014-10-22 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-22 06:00:00+05:00') | (obs_df.Date == '2014-10-22 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-22 18:00:00+05:00') | (obs_df.Date == '2014-10-23 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-23 06:00:00+05:00') | (obs_df.Date == '2014-10-23 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-23 18:00:00+05:00') | (obs_df.Date == '2014-10-24 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-24 06:00:00+05:00') | (obs_df.Date == '2014-10-24 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-24 18:00:00+05:00') | (obs_df.Date == '2014-10-25 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-25 06:00:00+05:00') | (obs_df.Date == '2014-10-25 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-25 18:00:00+05:00') | (obs_df.Date == '2014-10-26 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-26 06:00:00+05:00') | (obs_df.Date == '2014-10-26 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-26 18:00:00+05:00') | (obs_df.Date == '2014-10-27 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-27 06:00:00+05:00') | (obs_df.Date == '2014-10-27 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-27 18:00:00+05:00') | (obs_df.Date == '2014-10-28 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-28 06:00:00+05:00') | (obs_df.Date == '2014-10-28 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-28 18:00:00+05:00') | (obs_df.Date == '2014-10-29 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-29 06:00:00+05:00') | (obs_df.Date == '2014-10-29 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-29 18:00:00+05:00') | (obs_df.Date == '2014-10-30 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-30 06:00:00+05:00') | (obs_df.Date == '2014-10-30 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-30 18:00:00+05:00') | (obs_df.Date == '2014-10-31 00:00:00+05:00') | 
-       (obs_df.Date == '2014-10-31 06:00:00+05:00') | (obs_df.Date == '2014-10-31 12:00:00+05:00') | 
-       (obs_df.Date == '2014-10-31 18:00:00+05:00')]
+# obs_df.info()
+# obs_df.head()
 
-# new 'Date' column with only '00,06,12,18' UTC hrs
+### BOOLEAN FILTER BY YEAR,MONTH,DAY,HOUR GOES HERE
 
-obs_df_time
+# obs_df_time.info()
+# obs_df_time.head()
 
-#obs_df_time = obs_df_time.set_index('Date')
-#obs_df_time.reset_index(inplace=True)
-
-obs_df_time.to_csv('/Users/mosesheavy/Desktop/64050KACK201410_filtered.csv')
+obs_df_time.to_csv('ENTER_OUTPUT_FILE_PATH_HERE')
